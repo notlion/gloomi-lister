@@ -1,0 +1,5 @@
+AuthType Basic
+AuthName "Gloomi"
+AuthUserFile /Library/WebServer/secret/.htpasswd
+
+Require valid-user
