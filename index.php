@@ -109,14 +109,14 @@ li.file>span.size{
 
 <h1>
 <?php
-    print('<a href="?dir='.preg_replace('/^\./', '', dirname($path)).'">'.$path.'</a>');
+    echo('<a href="?dir='.preg_replace('/^\./', '', dirname($path)).'">'.$path.'</a>');
 ?>
 </h1>
 
 <ol id="dirs">
 <?php
     foreach($dirs as &$dir){
-        print('<li class="dir"><a href="?dir='.encode_path($dir).'">'.basename($dir).'</a></li>');
+        echo('<li class="dir"><a href="?dir='.encode_path($dir).'">'.basename($dir)."</a></li>\n");
     }
 ?>
 </ol>
@@ -124,10 +124,12 @@ li.file>span.size{
 <ol id="files">
 <?php
     foreach($files as &$file){
-        print('<li class="file">');
-        print('<a href="/'.encode_path($file).'">'.basename($file).'</a>');
-        print('<span class="size">'.format_bytes(filesize($file)).'</span>');
-        print('</li>');
+        echo(
+            '<li class="file">'.
+            '<a href="/'.encode_path($file).'">'.basename($file).'</a>'.
+            '<span class="size">'.format_bytes(filesize($file)).'</span>'.
+            "</li>\n"
+        );
     }
 ?>
 </ol>
