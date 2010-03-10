@@ -45,9 +45,13 @@ li.dir>a{
     color: rgba(0,0,0,0.5);
     background-color: #444;
 }
-li.dir>a:hover{
+li.dir>a:hover, li.dir>a.zip:hover{
     color: #000;
     background-color: #aaff00;
+}
+li.dir>a.zip{
+    background-color: #333;
+    margin-left: 2px;
 }
 
 li.file>a{
@@ -67,37 +71,14 @@ li.file>span.size{
 </head>
 <body>
 <?php
-    function ends_with($str, $sub){
-        return substr($str, strlen($str) - strlen($sub)) === $sub;
-    }
-    function encode_path($path){
-        return str_replace("%2F", "/", rawurlencode($path));
-    }
-    function decode_clean_path($path){
-        return preg_replace(array('/^\./', '/\.\.\//', '/\.\//'), "", rawurldecode($path));
-    }
-    function is_img($path){
-        foreach(array('.png', '.jpg', '.jpeg', '.gif') as $ext)
-            if(ends_with($path, $ext))
-                return true;
-        return false;
-    }
-    function format_bytes($bytes, $precision=2){
-        $units = array('B', 'KB', 'MB', 'GB', 'TB');
-
-        $bytes = max($bytes, 0);
-        $pow = floor(($bytes ? log($bytes) : 0) / log(1024));
-        $pow = min($pow, count($units) - 1);
-
-        $bytes /= pow(1024, $pow);
-
-        return round($bytes, $precision).' '.$units[$pow];
-    }
+    require 'inc/util.php';
+    
+    $root_dir = '_data/';
 
     // Get Directory
-    $path = isset($_GET['dir']) ? decode_clean_path($_GET['dir']) : '';
+    $path = isset($_GET['d']) ? decode_clean_path($_GET['d']) : '';
     if(strlen($path) == 0 || !(file_exists($path) && is_dir($path)))
-        $path = '_data/';
+        $path = $root_dir;
 
     if(!ends_with($path, '/'))
         $path .= '/';
@@ -109,14 +90,24 @@ li.file>span.size{
 
 <h1>
 <?php
-    echo('<a href="?dir='.preg_replace('/^\./', '', dirname($path)).'">'.$path.'</a>');
+    echo('<a href="?d='.preg_replace('/^\./', '', dirname($path)).'">'.$path.'</a>');
 ?>
 </h1>
 
 <ol id="dirs">
 <?php
+    $zip_enabled = !($path === $root_dir || $path[0] === '/');
     foreach($dirs as &$dir){
-        echo('<li class="dir"><a href="?dir='.encode_path($dir).'">'.basename($dir)."</a></li>\n");
+        $html = '<li class="dir">'.
+                '<a href="?d='.encode_path($dir).'">'.basename($dir).'</a>';
+        
+        # add a link to zip stream the dir
+        if($zip_enabled)
+            $html .= '<a class="zip" href="zip.php?d='.encode_path($dir).'">zip</a>';
+        
+        $html .= "</li>\n";
+        
+        echo($html);
     }
 ?>
 </ol>
