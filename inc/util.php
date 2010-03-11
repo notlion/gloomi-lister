@@ -1,5 +1,8 @@
 <?php
 
+require 'config.php';
+
+
 function starts_with($str, $needle){
     return strpos($str, $needle) === 0;
 }
@@ -19,6 +22,16 @@ function is_img($path){
         if(ends_with($path, $ext))
             return true;
     return false;
+}
+
+function is_zippable_dir($root_dir, $dir){
+    return !($dir === $root_dir || $dir[0] === '/' || $dir[0] === '.');
+}
+
+function ensure_trailing_slash($path){
+    if(!ends_with($path, '/'))
+        return $path.'/';
+    return $path;
 }
 
 function format_bytes($bytes, $precision=2){

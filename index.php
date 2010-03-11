@@ -35,14 +35,14 @@ ol.li{
 li.dir, li.file{
     margin-bottom: 12px;
 }
-li.dir>a, li.file>a, li.file>span.size{
+li.dir>a, li.file>a, li.file>span.size, li.zip>a{
+    color: rgba(0,0,0,0.5);
     padding: 5px;
     -moz-border-radius: 2px;
     -webkit-border-radius: 2px;
 }
 
 li.dir>a{
-    color: rgba(0,0,0,0.5);
     background-color: #444;
 }
 li.dir>a:hover, li.dir>a.zip:hover{
@@ -55,7 +55,6 @@ li.dir>a.zip{
 }
 
 li.file>a{
-    color: rgba(0,0,0,0.5);
     background-color: #315dff;
 }
 li.file>a:hover{
@@ -63,29 +62,36 @@ li.file>a:hover{
     background-color: #aaff00;
 }
 li.file>span.size{
-    color: rgba(0,0,0,0.5);
     background-color: #1E3AA3;
     margin-left: 2px;
+}
+
+li.zip>a{
+    background-color: #FF417F;
+}
+li.zip>a:hover{
+    color: #000;
+    background-color: #aaff00;
 }
 </style>
 </head>
 <body>
 <?php
     require 'inc/util.php';
-    
-    $root_dir = '_data/';
 
     // Get Directory
     $path = isset($_GET['d']) ? decode_clean_path($_GET['d']) : '';
     if(strlen($path) == 0 || !(file_exists($path) && is_dir($path)))
         $path = $root_dir;
 
-    if(!ends_with($path, '/'))
-        $path .= '/';
+    $path = ensure_trailing_slash($path);
+    $root_dir = ensure_trailing_slash($root_dir);
 
     $dirs = array_filter(glob(quotemeta($path).'*'), 'is_dir');
     $files = array_filter(glob(quotemeta($path).'*'), 'is_file');
-    //$imgs = array_filter($files, 'is_img');
+
+    $zip_enabled = is_zippable_dir($root_dir, dirname($path).'/');
+    $zip_children_enabled = is_zippable_dir($root_dir, $path);
 ?>
 
 <h1>
@@ -96,13 +102,12 @@ li.file>span.size{
 
 <ol id="dirs">
 <?php
-    $zip_enabled = !($path === $root_dir || $path[0] === '/');
     foreach($dirs as &$dir){
         $html = '<li class="dir">'.
                 '<a href="?d='.encode_path($dir).'">'.basename($dir).'</a>';
         
         # add a link to zip stream the dir
-        if($zip_enabled)
+        if($zip_children_enabled)
             $html .= '<a class="zip" href="zip.php?d='.encode_path($dir).'">zip</a>';
         
         $html .= "</li>\n";
@@ -125,13 +130,15 @@ li.file>span.size{
 ?>
 </ol>
 
-<ol id="imgs">
 <?php
-    //foreach($imgs as &$img){
-    //    print('<li class="img"><a href="/'.encode_path($img).'"><img src="'.encode_path($img).'"/></a></li>');
-    //}
+if($zip_enabled){
+    echo(
+        '<ol id="zip"><li class="zip">'.
+        '<a href="zip.php?d='.encode_path($path).'">'.basename($path).'.zip</a>'.
+        "</li></ol>\n"
+    );
+}
 ?>
-</ol>
 
 </body>
 </html>
