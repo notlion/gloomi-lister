@@ -4,7 +4,7 @@ require 'inc/util.php';
 require 'inc/zipstream.php';
 
 # get the directory to zip
-$dir = isset($_GET['d']) ? decode_clean_path($_GET['d']) : '';
+$dir = isset($_GET['d']) ? clean_path(stripslashes($_GET['d'])) : '';
 
 if(strlen($dir) > 0 && is_dir($dir)){
     date_default_timezone_set('America/Los_Angeles');

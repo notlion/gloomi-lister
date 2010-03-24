@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
 <title>Gloomi</title>
@@ -67,7 +68,7 @@ li.file>span.size{
 }
 
 li.zip>a{
-    background-color: #FF417F;
+    background-color: #C9165D;
 }
 li.zip>a:hover{
     color: #000;
@@ -80,7 +81,7 @@ li.zip>a:hover{
     require 'inc/util.php';
 
     // Get Directory
-    $path = isset($_GET['d']) ? decode_clean_path($_GET['d']) : '';
+    $path = isset($_GET['d']) ? clean_path(stripslashes($_GET['d'])) : '';
     if(strlen($path) == 0 || !(file_exists($path) && is_dir($path)))
         $path = $root_dir;
 
@@ -96,10 +97,11 @@ li.zip>a:hover{
 
 <h1>
 <?php
-    echo('<a href="?d='.preg_replace('/^\./', '', dirname($path)).'">'.$path.'</a>');
+    echo('<a href="?d='.preg_replace('/^\./', '', dirname($path)).'">'.$path."</a>\n");
 ?>
 </h1>
 
+<?php if(count($dirs) > 0){ ?>
 <ol id="dirs">
 <?php
     foreach($dirs as &$dir){
@@ -116,7 +118,9 @@ li.zip>a:hover{
     }
 ?>
 </ol>
+<?php } ?>
 
+<?php if(count($files) > 0){ ?>
 <ol id="files">
 <?php
     foreach($files as &$file){
@@ -129,6 +133,7 @@ li.zip>a:hover{
     }
 ?>
 </ol>
+<?php } ?>
 
 <?php
 if($zip_enabled){

@@ -13,8 +13,8 @@ function ends_with($str, $sub){
 function encode_path($path){
     return str_replace("%2F", "/", rawurlencode($path));
 }
-function decode_clean_path($path){
-    return preg_replace(array('/^\./', '/\.\.\//', '/\.\//'), "", rawurldecode($path));
+function clean_path($path){
+    return preg_replace(array('/^\./', '/\.\.\//', '/\.\//'), "", $path);
 }
 
 function is_img($path){
