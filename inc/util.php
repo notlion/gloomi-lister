@@ -46,6 +46,14 @@ function format_bytes($bytes, $precision=2){
     return round($bytes, $precision).' '.$units[$pow];
 }
 
+function xxxx_name($name)
+{
+    $name = preg_replace('/[a-z]/', 'x', $name);
+    $name = preg_replace('/[A-Z]/', 'X', $name);
+    $name = preg_replace('/[0-9]/', '#', $name);
+    return $name;
+}
+
 function sort_by_mdate(&$abs_files, &$files){  // Not really generic, but oh well
     $mtimes = Array();
     foreach($files as $file){
