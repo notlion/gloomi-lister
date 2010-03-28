@@ -1,0 +1,3 @@
+To Customize for your own Server
+
+- change the $root_dir variable in inc/config.php to the directory you want to list (it must be visible to the web)
