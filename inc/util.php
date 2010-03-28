@@ -46,4 +46,54 @@ function format_bytes($bytes, $precision=2){
     return round($bytes, $precision).' '.$units[$pow];
 }
 
+function sort_by_mdate(&$abs_files, &$files){  // Not really generic, but oh well
+    $mtimes = Array();
+    foreach($files as $file){
+        if(is_dir($file))
+            $mtimes[] = dir_get_mtime($file);
+        else
+            $mtimes[] = filemtime($file);
+    }
+    array_multisort(
+        $mtimes,    SORT_DESC, SORT_NUMERIC,
+        $files,     SORT_ASC,  SORT_STRING,
+        $abs_files, SORT_ASC,  SORT_STRING
+    );
+}
+
+function dir_get_files($dir, $recursive=true){
+    $dir = ensure_trailing_slash($dir);
+    $files = array();
+    $handle = opendir($dir);
+    if($handle){
+        while($file = readdir($handle)){
+            if(($file != '.') && ($file != '..')){
+                $file = $dir.$file;
+                if(is_dir($file)){
+                    if($recursive && $max_depth > 0){
+                        $files = array_merge($files, dir_get_files($file.'/'));
+                    }
+                }
+                else{
+                    $files[] = $file;
+                }
+            }
+        }
+        closedir($handle);
+    }
+    return $files;
+}
+
+function dir_get_mtime($dir, $recursive=true){
+    $files = dir_get_files($dir, $recursive);
+    $highest_mtime = 0;
+    foreach($files as $file){
+        $file_mtime = filemtime($file);
+        if($file_mtime > $highest_mtime){
+            $highest_mtime = $file_mtime;
+        }
+    }
+    return $highest_mtime;
+}
+
 ?>

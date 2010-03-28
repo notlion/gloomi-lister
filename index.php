@@ -8,7 +8,7 @@ body{
     letter-spacing: -0.1em;
     margin: 40px 30px 40px 30px;
     color: #fff;
-    background-color: #222;
+    background: #222 url(img/okaynokay.png);
 }
 
 a{
@@ -79,7 +79,7 @@ li.zip>a:hover{
 <body>
 <?php
     require 'inc/util.php';
-
+    
     // Get Directory
     $path = isset($_GET['d']) ? clean_path(stripslashes($_GET['d'])) : '';
     if(strlen($path) == 0 || !(file_exists($path) && is_dir($path)))
@@ -90,6 +90,12 @@ li.zip>a:hover{
 
     $dirs = array_filter(glob(quotemeta($path).'*'), 'is_dir');
     $files = array_filter(glob(quotemeta($path).'*'), 'is_file');
+    
+    // Sort Dirs by Date
+    if($path != $root_dir){
+        $abs_dirs = array_filter(glob(quotemeta(realpath($path).'/').'*'), 'is_dir');
+        sort_by_mdate($abs_dirs, $dirs);
+    }
 
     $zip_enabled = is_zippable_dir($root_dir, dirname($path).'/');
     $zip_children_enabled = is_zippable_dir($root_dir, $path);
