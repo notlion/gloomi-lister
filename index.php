@@ -29,9 +29,8 @@ ol{
     margin-bottom: 25px;
     list-style-type: none;
 }
-ol.li{
-    float: left;
-    clear: both;
+ol>li{
+    white-space: nowrap;
 }
 
 li.dir, li.file{
