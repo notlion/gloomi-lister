@@ -80,7 +80,7 @@ li.zip>a:hover{
 <?php
     require 'inc/util.php';
 
-    // Get Directory
+    # Get Directory
     $path = isset($_GET['d']) ? clean_path(stripslashes($_GET['d'])) : '';
     if(strlen($path) == 0 || !(file_exists($path) && is_dir($path)))
         $path = $root_dir;
@@ -91,7 +91,7 @@ li.zip>a:hover{
     $dirs = array_filter(glob(quotemeta($path).'*'), 'is_dir');
     $files = array_filter(glob(quotemeta($path).'*'), 'is_file');
 
-    // Sort Dirs by Date
+    # Sort Dirs by Date
     if($path != $root_dir){
         $abs_dirs = array_filter(glob(quotemeta(realpath($path).'/').'*'), 'is_dir');
         sort_by_mdate($abs_dirs, $dirs);
@@ -103,7 +103,7 @@ li.zip>a:hover{
 
 <h1>
 <?php
-    echo('<a href="?d='.preg_replace('/^\./', '', dirname($path)).'">'.$path."</a>\n");
+    echo('<a href="?d='.encode_path(dirname($path)).'">'.$path."</a>\n");
 ?>
 </h1>
 

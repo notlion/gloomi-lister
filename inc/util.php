@@ -14,7 +14,7 @@ function encode_path($path){
     return str_replace("%2F", "/", rawurlencode($path));
 }
 function clean_path($path){
-    return preg_replace(array('/^\./', '/\.\.\//', '/\.\//'), "", $path);
+    return preg_replace(array('/^\./', '/\.\.\//', '/\.\//'), '', $path);
 }
 
 function is_img($path){
