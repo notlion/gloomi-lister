@@ -78,7 +78,7 @@ function dir_get_files($dir, $recursive=true){
             if(($file != '.') && ($file != '..')){
                 $file = $dir.$file;
                 if(is_dir($file)){
-                    if($recursive && $max_depth > 0){
+                    if($recursive){
                         $files = array_merge($files, dir_get_files($file.'/'));
                     }
                 }

@@ -12,8 +12,6 @@ if(strlen($dir) > 0 && is_dir($dir)){
     if(!ends_with($dir, '/'))
         $dir .= '/';
 
-    $pwd = dirname(__FILE__);
-
     # create new zip stream object
     $zip = new ZipStream(basename($dir).'.zip', array(
       'comment' => 'found in a cenote deep in the jungle.'
@@ -22,14 +20,14 @@ if(strlen($dir) > 0 && is_dir($dir)){
     $file_opt = array('time' => time());
 
     # add files
-    $files = array_filter(glob(quotemeta($dir).'*'), 'is_file');
+    $files = dir_get_files($dir);
+    $dir_len = strlen($dir);
     foreach($files as $file){
-        # build absolute path and get file data
-        $path = ($file[0] == '/') ? $file : $pwd.'/'.$file;
-        $data = file_get_contents($path);
+        # get file data
+        $data = file_get_contents($file);
 
         # add file to archive
-        $zip->add_file(basename($file), $data, $file_opt);
+        $zip->add_file(substr($file, $dir_len), $data, $file_opt);
     }
 
     # finish archive
