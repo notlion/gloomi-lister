@@ -1,7 +1,8 @@
 <?php
 
 require 'inc/util.php';
-require 'inc/zipstream.php';
+require 'inc/zipcreate.cls.lib.php';
+require 'inc/zipcreate.cls.php';
 
 # get the directory to zip
 $dir = isset($_GET['d']) ? clean_path(stripslashes($_GET['d'])) : '';
@@ -12,12 +13,8 @@ if(strlen($dir) > 0 && is_dir($dir)){
     if(!ends_with($dir, '/'))
         $dir .= '/';
 
-    # create new zip stream object
-    $zip = new ZipStream(basename($dir).'.zip', array(
-      'comment' => 'found in a cenote deep in the jungle.'
-    ));
-    
-    $file_opt = array('time' => time());
+	# create new zip stream object
+	$zip = new ZipCreate();
 
     # add files
     $files = dir_get_files($dir);
@@ -27,11 +24,17 @@ if(strlen($dir) > 0 && is_dir($dir)){
         $data = file_get_contents($file);
 
         # add file to archive
-        $zip->add_file(substr($file, $dir_len), $data, $file_opt);
+		$zip->add_file($data, substr($file, $dir_len), filemtime($file));
     }
 
     # finish archive
-    $zip->finish();
+	$zipcontent = $zip->build_zip();
+
+	header('Content-Type: application/zip');
+	header('Content-Length: '. strlen($zipcontent));
+	header('Content-Disposition: attachment; filename="' . basename($dir).'.zip' . '"');
+	header('Content-Transfer-Encoding: binary');
+	echo $zipcontent;
 }
 
 ?>
