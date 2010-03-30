@@ -24,8 +24,9 @@ function is_img($path){
     return false;
 }
 
-function is_zippable_dir($root_dir, $dir){
-    return !($dir === $root_dir || $dir[0] === '/' || $dir[0] === '.');
+function is_zippable_dir($dir){
+    global $root_dir, $allow_root_zips;
+    return ($allow_root_zips || $dir !== $root_dir) && $dir[0] !== '/' && $dir[0] !== '.';
 }
 
 function ensure_trailing_slash($path){
