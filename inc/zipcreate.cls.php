@@ -1,6 +1,4 @@
 <?php
-require 'inc/zipcreate.cls.lib.php';
-
 /***********************************************************
 * filename     zipcreate.cls.php
 * description  Create zip files on the fly
@@ -304,10 +302,4 @@ class ZipCreate
     echo $data;
   }
 }
-
-$zip = new ZipCreate("gzip", true, "file.zip");
-$zip->add_file(file_get_contents("testfile.txt"), "testfile.txt");
-$zip->finish_stream();
-
-
 ?>
