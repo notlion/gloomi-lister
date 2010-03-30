@@ -6,7 +6,7 @@ require 'inc/zipcreate.cls.lib.php';
 * description  Create zip files on the fly
 * project
 * author       redmonkey
-* version      0.2
+* version      0.3
 * status       beta
 * support      <!-- e --><a href="mailto:zipclass@redmonkey.com">zipclass@redmonkey.com</a><!-- e -->
 * license      GPL
@@ -36,6 +36,7 @@ require 'inc/zipcreate.cls.lib.php';
 * 01/01/2005   v0.1 initial version
 * 02/01/2005   v0.2 added checking and handling for files of
 *                   zero bytes in length
+* 30/03/2010   v0.3 added support for streaming zip's (author: Darklord <darklord [ät] darkboxed.org>)
 ************************************************************/
 class ZipCreate
 {
