@@ -13,8 +13,8 @@ if(strlen($dir) > 0 && is_dir($dir)){
     if(!ends_with($dir, '/'))
         $dir .= '/';
 
-	# create new zip stream object
-	$zip = new ZipCreate('gzip', true, basename($dir).'.zip');
+    # create new zip stream object
+    $zip = new ZipCreate('gzip', true, basename($dir).'.zip');
 
     # add files
     $files = dir_get_files($dir);
@@ -24,11 +24,11 @@ if(strlen($dir) > 0 && is_dir($dir)){
         $data = file_get_contents($file);
 
         # add file to archive
-		$zip->add_file($data, substr($file, $dir_len), filemtime($file));
+        $zip->add_file($data, substr($file, $dir_len), filemtime($file));
     }
 
     # finish archive
-	$zipcontent = $zip->finish_stream();
+    $zipcontent = $zip->finish_stream();
 }
 
 ?>
