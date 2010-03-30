@@ -14,7 +14,7 @@ if(strlen($dir) > 0 && is_dir($dir)){
         $dir .= '/';
 
 	# create new zip stream object
-	$zip = new ZipCreate();
+	$zip = new ZipCreate('gzip', true, basename($dir).'.zip');
 
     # add files
     $files = dir_get_files($dir);
@@ -28,13 +28,7 @@ if(strlen($dir) > 0 && is_dir($dir)){
     }
 
     # finish archive
-	$zipcontent = $zip->build_zip();
-
-	header('Content-Type: application/zip');
-	header('Content-Length: '. strlen($zipcontent));
-	header('Content-Disposition: attachment; filename="' . basename($dir).'.zip' . '"');
-	header('Content-Transfer-Encoding: binary');
-	echo $zipcontent;
+	$zipcontent = $zip->finish_stream();
 }
 
 ?>
