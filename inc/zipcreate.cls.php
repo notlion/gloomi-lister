@@ -1,4 +1,6 @@
 <?php
+require 'inc/zipcreate.cls.lib.php';
+
 /***********************************************************
 * filename     zipcreate.cls.php
 * description  Create zip files on the fly
@@ -44,6 +46,10 @@ class ZipCreate
   var $entries;  // counter for total entries within the zip
   var $ztype;    // current compression type
 
+  var $stream;
+  var $stream_filename;
+  var $headers_sent;
+
   /**
   * @return
   * @param   string _ztype  compression type to use, currently only supporting
@@ -51,13 +57,17 @@ class ZipCreate
   * @desc                   constructor, initialise class variables and set compression
   *                         type (defaults to gzip (Deflated)) for files
   */
-  function ZipCreate($_ztype = 'gzip')
+  function ZipCreate($_ztype = 'gzip', $_stream = false, $_strem_filename = "")
   {
     $this->filedata = '';
     $this->cntrldir = '';
     $this->comment  = '';
     $this->offset   = 0;
     $this->entries  = 0;
+
+	$this->stream = $_stream;
+	$this->strem_filename = $_strem_filename;
+	$this->headers_sent = false;
 
     switch(strtolower($_ztype))
     {
@@ -179,6 +189,7 @@ class ZipCreate
                      0,             // uncompressed filesize            (4 bytes)
                      $fn_len,       // length of filename               (2 bytes)
                      0,             // extra field length               (2 bytes)
+
                      $_name,        // filename                 (variable length)
                      $c_data,       // compressed data          (variable length)
                      0x08074b50,    // extended local header signature  (4 bytes)
@@ -186,8 +197,15 @@ class ZipCreate
                      $c_len,        // compressed filesize              (4 bytes)
                      $uc_len);      // uncompressed filesize            (4 bytes)
 
-    // add to filedata
-    $this->filedata .= $filedata;
+	if($this->stream)
+	{
+		// if we are going to stream the zip just send the filedata
+		$this->send($filedata);
+	}else
+	{
+    	// otherwies just add it to filedata for later
+    	$this->filedata .= $filedata;
+	}
 
     // pack file data and add to central directory
     $this->cntrldir .= pack('VvvvvVVVVvvvvvVVa' . $fn_len,
@@ -235,21 +253,60 @@ class ZipCreate
   */
   function build_zip()
   {
-    $com_len = strlen($this->comment);     // length of zip file comment
+	$this->send($this->filedata);
+	$this->finish_stream();
+  }
 
-    return $this->filedata                 // .zip file data                (variable length)
-         . $this->cntrldir                 // .zip central directory record (variable length)
-         . pack('VvvvvVVva' . $com_len,
-                 0x06054b50,               // end of central dir signature          (4 bytes)
-                 0,                        // number of this disk                   (2 bytes)
-                 0,                        // number of the disk with start of
-                                           // central directory record              (2 bytes)
-                 $this->entries,           // total # of entries on this disk       (2 bytes)
-                 $this->entries,           // total # of entries overall            (2 bytes)
-                 strlen($this->cntrldir),  // size of central dir                   (4 bytes)
-                 $this->offset,            // offset to start of central dir        (4 bytes)
-                 $com_len,                 // .zip file comment length              (2 bytes)
-                 $this->comment);          // .zip file comment             (variable length)
+  /**
+  * @desc                to finish streaming the zip throw the rest of the zip stuff in and send it
+  */
+  function finish_stream()
+  {
+	$com_len = strlen($this->comment);     // length of zip file comment
+	$this->send( 
+		  $this->cntrldir                 // .zip central directory record (variable length)
+		. pack('VvvvvVVva' . $com_len,
+                0x06054b50,               // end of central dir signature          (4 bytes)
+                0,                        // number of this disk                   (2 bytes)
+                0,                        // number of the disk with start of
+                                          // central directory record              (2 bytes)
+                $this->entries,           // total # of entries on this disk       (2 bytes)
+                $this->entries,           // total # of entries overall            (2 bytes)
+                strlen($this->cntrldir),  // size of central dir                   (4 bytes)
+                $this->offset,            // offset to start of central dir        (4 bytes)
+                $com_len,                 // .zip file comment length              (2 bytes)
+                $this->comment)           // .zip file comment             (variable length)
+		);
+  }
+
+  /**
+  * @return string       the data passed to the function
+  * @desc                Send string, sending HTTP headers if necessary.
+  */
+  function send($data)
+  {
+    if (!$this->headers_sent)
+	{
+	    $headers = array(
+	      'Content-Type'              => 'application/x-zip',
+	      'Content-Disposition'       => 'attachment' . "; filename=\"{$this->strem_filename}\"",
+	      'Pragma'                    => 'public',
+	      'Cache-Control'             => 'public, must-revalidate',
+	      'Content-Transfer-Encoding' => 'binary',
+	    );
+
+	    foreach ($headers as $key => $val)
+	      header("$key: $val");
+	$this->headers_sent = true;
+	}
+
+    echo $data;
   }
 }
+
+$zip = new ZipCreate("gzip", true, "file.zip");
+$zip->add_file(file_get_contents("testfile.txt"), "testfile.txt");
+$zip->finish_stream();
+
+
 ?>
