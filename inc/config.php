@@ -12,4 +12,7 @@ $bg_img_path = 'img/okaynokay.png';
 # set this to true if you want those to have zip links too
 $allow_root_zips = false;
 
+# choose wether or not to allow zip-functionality
+$allow_any_zips = true;
+
 ?>
