@@ -18,9 +18,8 @@
         sort_by_mdate($abs_dirs, $dirs);
     }
 
-    $zip_enabled = $allow_any_zips && is_zippable_dir(dirname($path).'/');
-    $zip_children_enabled = $allow_any_zips && is_zippable_dir($path);
-    
+    $zip_enabled = $allow_zips && is_zippable_dir(dirname($path).'/');
+    $zip_children_enabled = $allow_zips && is_zippable_dir($path);
 ?>
 <!DOCTYPE html>
 <html>

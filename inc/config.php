@@ -9,10 +9,9 @@ $root_dir = '_data/';
 $bg_img_path = 'img/okaynokay.png';
 
 # by default directories under the root are assumed to be too large
-# set this to true if you want those to have zip links too
+# set $allow_root_zips true if you want those to have zip links too
+# set $allow_zips false to hide all streaming zip links
 $allow_root_zips = false;
-
-# choose wether or not to allow zip-functionality
-$allow_any_zips = true;
+$allow_zips = true;
 
 ?>
